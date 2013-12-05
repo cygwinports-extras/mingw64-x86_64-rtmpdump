@@ -1,0 +1,24 @@
+--- origsrc/rtmpdump-2.3/librtmp/Makefile	2013-12-05 01:16:37.220550200 -0600
++++ src/rtmpdump-2.3/librtmp/Makefile	2013-12-05 01:17:39.868133500 -0600
+@@ -60,10 +60,13 @@ clean:
+ librtmp.a: $(OBJS)
+ 	$(AR) rs $@ $?
+ 
+-librtmp.$(SO_EXT): $(OBJS)
++librtmp.$(SO_posix): $(OBJS)
+ 	$(CC) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $^ $> $(CRYPTO_LIB)
+ 	ln -sf $@ librtmp.so
+ 
++librtmp.$(SO_mingw): $(OBJS)
++	$(CC) -shared -Wl,--out-implib,$@.a $(LDFLAGS) -o $@ $^ $> $(CRYPTO_LIB)
++
+ log.o: log.c log.h Makefile
+ rtmp.o: rtmp.c rtmp.h rtmp_sys.h handshake.h dh.h log.h amf.h Makefile
+ amf.o: amf.c amf.h bytes.h log.h Makefile
+@@ -88,4 +91,6 @@ install_so.0:	librtmp.so.0
+ 	cd $(LIBDIR); ln -sf librtmp.so.0 librtmp.so
+ 
+ install_dll:	librtmp.dll
++	-mkdir -p $(BINDIR)
+ 	cp librtmp.dll $(BINDIR)
++	cp librtmp.dll.a $(LIBDIR)

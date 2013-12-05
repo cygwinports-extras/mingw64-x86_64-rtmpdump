@@ -1,0 +1,29 @@
+CROSS_HOST="x86_64-w64-mingw32"
+inherit cross
+
+NAME="mingw64-x86_64-rtmpdump"
+VERSION=2.3
+RELEASE=1
+CATEGORY="Devel"
+SUMMARY="RTMP stream toolkit for Win64 toolchain"
+DESCRIPTION="rtmpdump is a toolkit for RTMP streams. All forms of RTMP are
+supported, including rtmp, rtmpt, rtmpe, rtmpte, and rtmps."
+HOMEPAGE="http://rtmpdump.mplayerhq.hu/"
+SRC_URI="http://rtmpdump.mplayerhq.hu/download/rtmpdump-${VERSION}.tgz"
+SRC_DIR="rtmpdump-${VERSION}"
+PATCH_URI="2.3-implib.patch"
+
+MAKEOPTS+=" prefix=${CROSS_PREFIX} SYS=mingw"
+
+src_compile() {
+	lndirs
+	cd ${B}/librtmp
+	cygmake CROSS_COMPILE=${CROSS_HOST}- OPT="${CFLAGS}"
+}
+
+src_install() {
+	cd ${B}/librtmp
+	cyginstall -j1
+
+	rm -fr ${D}${CROSS_PREFIX}/man/
+}
